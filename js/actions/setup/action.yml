@@ -1,0 +1,32 @@
+name: nodejs-setup
+description: Setup Node.js
+
+inputs: 
+  node-version: 
+    required: true
+  pkg-manager:
+    required: true
+
+
+runs: 
+  using: "composite"
+  steps:
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Install dependencies (npm)
+      if: ${{ inputs.pkg-manager == 'npm' }}
+      run: npm install
+      shell: bash
+
+    - name: Install dependencies (yarn)
+      if: ${{ inputs.pkg-manager == 'yarn' }}
+      run: yarn
+      shell: bash
+
+    - name: Install dependencies (pnpm)
+      if: ${{ inputs.pkg-manager == 'pnpm' }}
+      run: pnpm install
+      shell: bash
