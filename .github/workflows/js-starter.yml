@@ -14,7 +14,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run local JS setup action
+      - name: Setup Node.js
         uses: ./js/actions/setup
         with:
           node-version: "22"
+
+      - name: Install dependencies
+        uses: ./js/actions/install-deps
+        with:
+          pkg-manager: "npm"

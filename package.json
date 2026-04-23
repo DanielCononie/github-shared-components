@@ -1,0 +1,23 @@
+{
+  "name": "github-actions-components",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DanielCononie/github-shared-components.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DanielCononie/github-shared-components/issues"
+  },
+  "homepage": "https://github.com/DanielCononie/github-shared-components#readme",
+  "dependencies": {
+    "lodash": "^4.18.1"
+  }
+}
