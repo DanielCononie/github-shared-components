@@ -1,4 +1,4 @@
-name: Test JS Setup
+name: Test JS Actions
 
 on:
   push:
@@ -23,3 +23,10 @@ jobs:
         uses: ./js/actions/install-deps
         with:
           pkg-manager: "npm"
+
+      - name: Run tests
+        uses: ./js/actions/test
+        with:
+          pkg-manager: "npm"
+          working-dir: "."
+        
