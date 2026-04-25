@@ -1,27 +1,31 @@
-# .github/workflows/js-auto-upgrade-test.yml
-name: JS Auto Upgrade (Test)
+# .github/workflows/js-auto-upgrade.yml
+name: JS Auto Upgrade
 
 on:
-  workflow_dispatch:
+  workflow_call:
     inputs:
       node-version:
         description: Node.js version
         required: false
+        type: string
         default: "22"
 
       pkg-manager:
         description: Package manager
         required: false
+        type: string
         default: "npm"
 
       working-dir:
         description: Directory containing package.json
         required: false
+        type: string
         default: "."
 
       upgrade-type:
         description: latest, minor, or patch
         required: false
+        type: string
         default: "patch"
 
 permissions:
@@ -67,6 +71,8 @@ jobs:
           commit-message: "chore: auto-upgrade JS dependencies"
           title: "chore: auto-upgrade JS dependencies"
           body: |
-            Test run of JS dependency auto-upgrade.
+            Automated dependency upgrade for JavaScript project.
+
+            Upgrade type: `${{ inputs.upgrade-type }}`
           labels: dependencies, automated
           delete-branch: true
