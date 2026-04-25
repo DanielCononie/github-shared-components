@@ -18,6 +18,6 @@
   },
   "homepage": "https://github.com/DanielCononie/github-shared-components#readme",
   "dependencies": {
-    "lodash": "^4.17.0"
+    "lodash": "^4.18.1"
   }
 }
