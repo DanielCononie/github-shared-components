@@ -1,0 +1,67 @@
+name: auto-upgrade
+description: Upgrade JavaScript/Node.js dependencies
+
+inputs:
+  pkg-manager:
+    description: Package manager to use -> npm, yarn, or pnpm
+    required: true
+
+  working-dir:
+    description: Directory containing package.json
+    required: false
+    default: "."
+
+  upgrade-type:
+    description: Type of upgrade to run -> latest, minor, or patch
+    required: false
+    default: "latest"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Validate upgrade type
+      run: |
+        case "${{ inputs.upgrade-type }}" in
+          latest|minor|patch)
+            echo "Upgrade type is valid: ${{ inputs.upgrade-type }}"
+            ;;
+          *)
+            echo "Invalid upgrade-type: ${{ inputs.upgrade-type }}"
+            echo "Allowed values: latest, minor, patch"
+            exit 1
+            ;;
+        esac
+      shell: bash
+
+    - name: Upgrade dependencies
+      working-directory: ${{ inputs.working-dir }}
+      run: |
+        if [ "${{ inputs.upgrade-type }}" = "latest" ]; then
+          npx npm-check-updates -u
+        else
+          npx npm-check-updates -u --target "${{ inputs.upgrade-type }}"
+        fi
+      shell: bash
+
+    - name: Install updated dependencies (npm)
+      if: ${{ inputs.pkg-manager == 'npm' }}
+      working-directory: ${{ inputs.working-dir }}
+      run: npm install
+      shell: bash
+
+    - name: Install updated dependencies (yarn)
+      if: ${{ inputs.pkg-manager == 'yarn' }}
+      working-directory: ${{ inputs.working-dir }}
+      run: yarn install
+      shell: bash
+
+    - name: Install updated dependencies (pnpm)
+      if: ${{ inputs.pkg-manager == 'pnpm' }}
+      working-directory: ${{ inputs.working-dir }}
+      run: pnpm install
+      shell: bash
+
+    - name: Show changed files
+      working-directory: ${{ inputs.working-dir }}
+      run: git status --short
+      shell: bash

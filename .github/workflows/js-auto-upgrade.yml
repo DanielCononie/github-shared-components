@@ -1,0 +1,81 @@
+name: JS Auto Upgrade
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node.js version to use
+        required: false
+        type: string
+        default: "22"
+
+      pkg-manager:
+        description: Package manager to use -> npm, yarn, or pnpm
+        required: false
+        type: string
+        default: "npm"
+
+      working-dir:
+        description: Directory containing package.json
+        required: false
+        type: string
+        default: "."
+
+      upgrade-type:
+        description: Type of upgrade to run -> latest, minor, or patch
+        required: false
+        type: string
+        default: "patch"
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-upgrade:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: ./js/actions/setup
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Upgrade dependencies
+        uses: ./js/actions/auto-upgrade
+        with:
+          pkg-manager: ${{ inputs.pkg-manager }}
+          working-dir: ${{ inputs.working-dir }}
+          upgrade-type: ${{ inputs.upgrade-type }}
+
+      - name: Install dependencies
+        uses: ./js/actions/install-deps
+        with:
+          pkg-manager: ${{ inputs.pkg-manager }}
+          working-dir: ${{ inputs.working-dir }}
+
+      - name: Run tests
+        uses: ./js/actions/test
+        with:
+          pkg-manager: ${{ inputs.pkg-manager }}
+          working-dir: ${{ inputs.working-dir }}
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: auto-upgrade/js-dependencies
+          commit-message: "chore: auto-upgrade JS dependencies"
+          title: "chore: auto-upgrade JS dependencies"
+          body: |
+            Automated dependency upgrade for JavaScript/Node.js project.
+
+            Upgrade type: `${{ inputs.upgrade-type }}`
+            Package manager: `${{ inputs.pkg-manager }}`
+            Working directory: `${{ inputs.working-dir }}`
+
+            This PR was created automatically after dependency upgrades and tests.
+          labels: dependencies, automated
+          delete-branch: true
