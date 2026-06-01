@@ -28,8 +28,3 @@ runs:
      if: ${{ inputs.pkg-manager == 'pnpm' }}
      run: pnpm install
      shell: bash
-
-   - name: Verify that the node_modules exist
-     working-directory: ${{ inputs.working-dir }}
-     run: ls node_modules
-     shell: bash
