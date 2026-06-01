@@ -1,5 +1,4 @@
-# .github/workflows/js-auto-upgrade.yml
-name: JS Auto Upgrade
+name: JS CI
 
 on:
   workflow_call:
@@ -22,12 +21,6 @@ on:
         type: string
         default: "."
 
-      upgrade-type:
-        description: latest, minor, or patch
-        required: false
-        type: string
-        default: "patch"
-
       components-ref:
         description: Ref of DanielCononie/github-shared-components to use for composite actions
         required: false
@@ -35,11 +28,10 @@ on:
         default: "v1"
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  auto-upgrade:
+  ci:
     runs-on: ubuntu-latest
 
     steps:
@@ -59,13 +51,6 @@ jobs:
           node-version: ${{ inputs.node-version }}
           pkg-manager: ${{ inputs.pkg-manager }}
 
-      - name: Upgrade dependencies
-        uses: ./.github/shared-components/js/actions/auto-upgrade
-        with:
-          pkg-manager: ${{ inputs.pkg-manager }}
-          working-dir: ${{ inputs.working-dir }}
-          upgrade-type: ${{ inputs.upgrade-type }}
-
       - name: Install dependencies
         uses: ./.github/shared-components/js/actions/install-deps
         with:
@@ -77,20 +62,3 @@ jobs:
         with:
           pkg-manager: ${{ inputs.pkg-manager }}
           working-dir: ${{ inputs.working-dir }}
-
-      - name: Remove shared action components checkout
-        run: rm -rf .github/shared-components
-        shell: bash
-
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          branch: auto-upgrade/js-dependencies
-          commit-message: "chore: auto-upgrade JS dependencies"
-          title: "chore: auto-upgrade JS dependencies"
-          body: |
-            Automated dependency upgrade for JavaScript project.
-
-            Upgrade type: `${{ inputs.upgrade-type }}`
-          labels: dependencies, automated
-          delete-branch: true

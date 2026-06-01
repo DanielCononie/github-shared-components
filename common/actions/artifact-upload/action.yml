@@ -1,0 +1,29 @@
+name: artifact-upload
+description: Upload a workflow artifact
+
+inputs:
+  name:
+    description: Artifact name
+    required: true
+  path:
+    description: File, directory, or wildcard pattern to upload
+    required: true
+  retention-days:
+    description: Number of days to retain the artifact
+    required: false
+    default: "90"
+  if-no-files-found:
+    description: Behavior when no files match -> warn, error, or ignore
+    required: false
+    default: "warn"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.name }}
+        path: ${{ inputs.path }}
+        retention-days: ${{ inputs.retention-days }}
+        if-no-files-found: ${{ inputs.if-no-files-found }}

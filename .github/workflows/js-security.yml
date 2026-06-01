@@ -1,5 +1,4 @@
-# .github/workflows/js-auto-upgrade.yml
-name: JS Auto Upgrade
+name: JS Security
 
 on:
   workflow_call:
@@ -22,11 +21,11 @@ on:
         type: string
         default: "."
 
-      upgrade-type:
-        description: latest, minor, or patch
+      audit-level:
+        description: Minimum vulnerability level that fails the audit
         required: false
         type: string
-        default: "patch"
+        default: "high"
 
       components-ref:
         description: Ref of DanielCononie/github-shared-components to use for composite actions
@@ -35,11 +34,10 @@ on:
         default: "v1"
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 jobs:
-  auto-upgrade:
+  security:
     runs-on: ubuntu-latest
 
     steps:
@@ -59,38 +57,15 @@ jobs:
           node-version: ${{ inputs.node-version }}
           pkg-manager: ${{ inputs.pkg-manager }}
 
-      - name: Upgrade dependencies
-        uses: ./.github/shared-components/js/actions/auto-upgrade
-        with:
-          pkg-manager: ${{ inputs.pkg-manager }}
-          working-dir: ${{ inputs.working-dir }}
-          upgrade-type: ${{ inputs.upgrade-type }}
-
       - name: Install dependencies
         uses: ./.github/shared-components/js/actions/install-deps
         with:
           pkg-manager: ${{ inputs.pkg-manager }}
           working-dir: ${{ inputs.working-dir }}
 
-      - name: Run tests
-        uses: ./.github/shared-components/js/actions/test
+      - name: Audit dependencies
+        uses: ./.github/shared-components/js/actions/vuln-check
         with:
           pkg-manager: ${{ inputs.pkg-manager }}
           working-dir: ${{ inputs.working-dir }}
-
-      - name: Remove shared action components checkout
-        run: rm -rf .github/shared-components
-        shell: bash
-
-      - name: Create pull request
-        uses: peter-evans/create-pull-request@v7
-        with:
-          branch: auto-upgrade/js-dependencies
-          commit-message: "chore: auto-upgrade JS dependencies"
-          title: "chore: auto-upgrade JS dependencies"
-          body: |
-            Automated dependency upgrade for JavaScript project.
-
-            Upgrade type: `${{ inputs.upgrade-type }}`
-          labels: dependencies, automated
-          delete-branch: true
+          audit-level: ${{ inputs.audit-level }}

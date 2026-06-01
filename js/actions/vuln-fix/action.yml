@@ -1,0 +1,69 @@
+name: vuln-fix
+description: Apply JavaScript/Node.js dependency vulnerability fixes
+
+inputs:
+  pkg-manager:
+    description: Package manager to use -> npm, yarn, or pnpm
+    required: true
+
+  working-dir:
+    description: Directory containing package.json
+    required: false
+    default: "."
+
+  force:
+    description: Whether to allow semver-major vulnerability fixes when supported
+    required: false
+    default: "false"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Validate force input
+      run: |
+        case "${{ inputs.force }}" in
+          true|false)
+            echo "Force input is valid: ${{ inputs.force }}"
+            ;;
+          *)
+            echo "Invalid force: ${{ inputs.force }}"
+            echo "Allowed values: true, false"
+            exit 1
+            ;;
+        esac
+      shell: bash
+
+    - name: Fix vulnerabilities (npm)
+      if: ${{ inputs.pkg-manager == 'npm' && inputs.force == 'false' }}
+      working-directory: ${{ inputs.working-dir }}
+      run: npm audit fix
+      shell: bash
+
+    - name: Force fix vulnerabilities (npm)
+      if: ${{ inputs.pkg-manager == 'npm' && inputs.force == 'true' }}
+      working-directory: ${{ inputs.working-dir }}
+      run: npm audit fix --force
+      shell: bash
+
+    - name: Report unsupported vulnerability fixing (yarn)
+      if: ${{ inputs.pkg-manager == 'yarn' }}
+      working-directory: ${{ inputs.working-dir }}
+      run: |
+        echo "Automatic vulnerability fixing is not implemented for yarn."
+        echo "Use js/actions/vuln-check to audit, then upgrade affected packages explicitly."
+        exit 1
+      shell: bash
+
+    - name: Report unsupported vulnerability fixing (pnpm)
+      if: ${{ inputs.pkg-manager == 'pnpm' }}
+      working-directory: ${{ inputs.working-dir }}
+      run: |
+        echo "Automatic vulnerability fixing is not implemented for pnpm."
+        echo "Use js/actions/vuln-check to audit, then upgrade affected packages explicitly."
+        exit 1
+      shell: bash
+
+    - name: Show changed files
+      working-directory: ${{ inputs.working-dir }}
+      run: git status --short
+      shell: bash

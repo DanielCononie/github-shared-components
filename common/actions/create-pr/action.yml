@@ -1,0 +1,42 @@
+name: create-pr
+description: Create a pull request for workflow changes
+
+inputs:
+  branch:
+    description: Branch to create or update
+    required: true
+  title:
+    description: Pull request title
+    required: true
+  body:
+    description: Pull request body
+    required: false
+    default: ""
+  commit-message:
+    description: Commit message for detected changes
+    required: true
+  labels:
+    description: Comma-separated pull request labels
+    required: false
+  delete-branch:
+    description: Delete the branch after the pull request is merged
+    required: false
+    default: "true"
+  token:
+    description: Token used to create the pull request
+    required: false
+    default: ${{ github.token }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Create pull request
+      uses: peter-evans/create-pull-request@v7
+      with:
+        branch: ${{ inputs.branch }}
+        title: ${{ inputs.title }}
+        body: ${{ inputs.body }}
+        commit-message: ${{ inputs.commit-message }}
+        labels: ${{ inputs.labels }}
+        delete-branch: ${{ inputs.delete-branch }}
+        token: ${{ inputs.token }}

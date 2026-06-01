@@ -1,2 +1,52 @@
 name: vuln-check
-description: audit for vulnerabilities
+description: Audit JavaScript/Node.js dependencies for vulnerabilities
+
+inputs:
+  pkg-manager:
+    description: Package manager to use -> npm, yarn, or pnpm
+    required: true
+
+  working-dir:
+    description: Directory containing package.json
+    required: false
+    default: "."
+
+  audit-level:
+    description: Minimum vulnerability level that fails npm audit -> low, moderate, high, or critical
+    required: false
+    default: "high"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Validate audit level
+      run: |
+        case "${{ inputs.audit-level }}" in
+          low|moderate|high|critical)
+            echo "Audit level is valid: ${{ inputs.audit-level }}"
+            ;;
+          *)
+            echo "Invalid audit-level: ${{ inputs.audit-level }}"
+            echo "Allowed values: low, moderate, high, critical"
+            exit 1
+            ;;
+        esac
+      shell: bash
+
+    - name: Audit dependencies (npm)
+      if: ${{ inputs.pkg-manager == 'npm' }}
+      working-directory: ${{ inputs.working-dir }}
+      run: npm audit --audit-level="${{ inputs.audit-level }}"
+      shell: bash
+
+    - name: Audit dependencies (yarn)
+      if: ${{ inputs.pkg-manager == 'yarn' }}
+      working-directory: ${{ inputs.working-dir }}
+      run: yarn audit --level "${{ inputs.audit-level }}"
+      shell: bash
+
+    - name: Audit dependencies (pnpm)
+      if: ${{ inputs.pkg-manager == 'pnpm' }}
+      working-directory: ${{ inputs.working-dir }}
+      run: pnpm audit --audit-level "${{ inputs.audit-level }}"
+      shell: bash

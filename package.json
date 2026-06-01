@@ -1,10 +1,10 @@
 {
   "name": "github-actions-components",
   "version": "1.0.0",
-  "description": "",
+  "description": "Reusable GitHub Actions components and workflows",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Tests passed\""
+    "test": "node scripts/validate-actions.js"
   },
   "repository": {
     "type": "git",

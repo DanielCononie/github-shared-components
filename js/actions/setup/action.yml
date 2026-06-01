@@ -19,3 +19,8 @@ runs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ inputs.node-version }}
+
+    - name: Enable Corepack
+      if: ${{ inputs.pkg-manager == 'yarn' || inputs.pkg-manager == 'pnpm' }}
+      run: corepack enable
+      shell: bash

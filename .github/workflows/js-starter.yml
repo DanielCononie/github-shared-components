@@ -8,8 +8,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-setup:
+  test-js-actions:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pkg-manager: npm
+            working-dir: fixtures/js-npm
+          - pkg-manager: yarn
+            working-dir: fixtures/js-yarn
+          - pkg-manager: pnpm
+            working-dir: fixtures/js-pnpm
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -18,15 +29,16 @@ jobs:
         uses: ./js/actions/setup
         with:
           node-version: "22"
+          pkg-manager: ${{ matrix.pkg-manager }}
 
       - name: Install dependencies
         uses: ./js/actions/install-deps
         with:
-          pkg-manager: "npm"
+          pkg-manager: ${{ matrix.pkg-manager }}
+          working-dir: ${{ matrix.working-dir }}
 
       - name: Run tests
         uses: ./js/actions/test
         with:
-          pkg-manager: "npm"
-          working-dir: "."
-        
+          pkg-manager: ${{ matrix.pkg-manager }}
+          working-dir: ${{ matrix.working-dir }}

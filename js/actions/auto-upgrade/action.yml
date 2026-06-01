@@ -3,8 +3,8 @@ description: Upgrade JavaScript/Node.js dependencies
 
 inputs:
   pkg-manager:
-    description: Package manager to use -> npm, yarn, or pnpm
-    required: true
+    description: Deprecated. Dependency installation is handled by js/actions/install-deps.
+    required: false
 
   working-dir:
     description: Directory containing package.json
@@ -41,24 +41,6 @@ runs:
         else
           npx npm-check-updates -u --target "${{ inputs.upgrade-type }}"
         fi
-      shell: bash
-
-    - name: Install updated dependencies (npm)
-      if: ${{ inputs.pkg-manager == 'npm' }}
-      working-directory: ${{ inputs.working-dir }}
-      run: npm install
-      shell: bash
-
-    - name: Install updated dependencies (yarn)
-      if: ${{ inputs.pkg-manager == 'yarn' }}
-      working-directory: ${{ inputs.working-dir }}
-      run: yarn install
-      shell: bash
-
-    - name: Install updated dependencies (pnpm)
-      if: ${{ inputs.pkg-manager == 'pnpm' }}
-      working-directory: ${{ inputs.working-dir }}
-      run: pnpm install
       shell: bash
 
     - name: Show changed files

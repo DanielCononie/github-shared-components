@@ -1,0 +1,18 @@
+name: JavaScript CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci:
+    uses: DanielCononie/github-shared-components/.github/workflows/js-ci.yml@v1
+    with:
+      node-version: "22"
+      pkg-manager: npm
+      working-dir: "."
+      components-ref: v1

@@ -1,0 +1,17 @@
+name: JavaScript Security
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  security:
+    uses: DanielCononie/github-shared-components/.github/workflows/js-security.yml@v1
+    with:
+      node-version: "22"
+      pkg-manager: npm
+      working-dir: "."
+      audit-level: high
+      components-ref: v1

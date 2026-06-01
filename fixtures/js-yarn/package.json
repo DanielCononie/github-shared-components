@@ -1,0 +1,9 @@
+{
+  "name": "fixture-js-yarn",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "yarn@1.22.22",
+  "scripts": {
+    "test": "node -e \"console.log('yarn fixture passed')\""
+  }
+}
