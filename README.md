@@ -105,3 +105,9 @@ npm test
 ```
 
 The validation script checks reusable workflow contracts, confirms local composite action metadata is present, and verifies the JavaScript package-manager fixtures.
+
+
+
+git tag v1
+git push origin main
+git push origin tag v1   
